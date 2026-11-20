@@ -14,13 +14,13 @@ Decades of telecom underinvestment in historically redlined neighborhoods have c
 
 ## System Architecture
 
-***Database:** PostgreSQL + PostGIS (spatial joins via `ST\_Intersects`, `ST\_AsGeoJSON` API payloads)
+**Database:** PostgreSQL + PostGIS (spatial joins via `ST\_Intersects`, `ST\_AsGeoJSON` API payloads)
 
-***Backend / ETL:** Python / Go (filtering FCC BDC datasets \& serving spatial REST endpoints)
+**Backend / ETL:** Python / Go (filtering FCC BDC datasets \& serving spatial REST endpoints)
 
-***Frontend GIS:** Leaflet.js interactive web map
+**Frontend GIS:** Leaflet.js interactive web map
 
-***Security Lab:** Isolated QEMU / Firmadyne offline firmware emulation \& CVE verification
+**Security Lab:** Isolated QEMU / Firmadyne offline firmware emulation \& CVE verification
 
 
 
@@ -30,7 +30,7 @@ Decades of telecom underinvestment in historically redlined neighborhoods have c
 
 asheville-digital-redlining/
 
-├── backend/        # API server \& ETL scripts
+├── backend/        # API server & ETL scripts
 
 ├── data/
 
