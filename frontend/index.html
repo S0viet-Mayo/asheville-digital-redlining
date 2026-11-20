@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asheville Digital Redlining & Cyber Risk GIS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; background: #111827; color: #f3f4f6; }
+    #map { flex: 2; height: 100%; }
+    #sidebar { flex: 1; max-width: 380px; padding: 20px; background: #1f2937; border-left: 1px solid #374151; overflow-y: auto; }
+    h2 { margin-top: 0; font-size: 1.2rem; color: #60a5fa; }
+    .box { background: #111827; padding: 15px; border-radius: 6px; border: 1px solid #374151; margin-top: 15px; }
+    .label { font-weight: bold; color: #9ca3af; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <div id="sidebar">
+    <h2>Asheville Spatial Cyber GIS</h2>
+    <p style="font-size: 0.9rem; color: #d1d5db;">
+      Prototype frontend connected to PostGIS schema. Click a neighborhood polygon to view historical HOLC, broadband, and firmware lab data.
+    </p>
+    <div id="details" class="box">
+      <p style="color: #9ca3af; margin: 0;">Select a zone on the map...</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Initialize map centered on Asheville, NC
+    const map = L.map('map').setView([35.588, -82.565], 13);
+
+    // Esri Dark Gray Base + Labels (Works directly via file:// with no API key)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16,
+      attribution: 'Tiles © Esri'
+    }).addTo(map);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 16
+    }).addTo(map);
+
+    // Placeholder GeoJSON (will be replaced by Go/PostGIS API endpoint)
+    const zones = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": {
+            "name": "Burton Street",
+            "holc": "Grade D (1937 Redlined)",
+            "broadband": "Legacy Copper / Asymmetric Cable",
+            "cyber": "Pending QEMU emulation of EOL ISP gateway firmware."
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[[-82.592, 35.582], [-82.583, 35.582], [-82.583, 35.575], [-82.592, 35.575], [-82.592, 35.582]]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": {
+            "name": "Southside / East End",
+            "holc": "Grade D (1937 Redlined)",
+            "broadband": "Fragmented Fiber / Legacy DSL",
+            "cyber": "Target zone for passive Shodan/WiGLE gateway banner analysis."
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[[-82.556, 35.588], [-82.546, 35.588], [-82.546, 35.579], [-82.556, 35.579], [-82.556, 35.588]]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": {
+            "name": "Grove Park",
+            "holc": "Grade A (1937 Best)",
+            "broadband": "Symmetrical Gigabit Fiber",
+            "cyber": "Control baseline: modern ISP hardware with active vendor patching."
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[[-82.548, 35.618], [-82.536, 35.618], [-82.536, 35.608], [-82.548, 35.608], [-82.548, 35.618]]]
+          }
+        }
+      ]
+    };
+
+    L.geoJSON(zones, {
+      style: (feature) => ({
+        color: feature.properties.holc.includes('Grade D') ? '#ef4444' : '#22c55e',
+        weight: 2,
+        fillOpacity: 0.35
+      }),
+      onEachFeature: (feature, layer) => {
+        layer.on('click', () => {
+          const p = feature.properties;
+          document.getElementById('details').innerHTML = `
+            <h3 style="margin-top:0;">${p.name}</h3>
+            <p><span class="label">1937 HOLC Status:</span><br/>${p.holc}</p>
+            <p><span class="label">Broadband Tier:</span><br/>${p.broadband}</p>
+            <p style="margin-bottom:0;"><span class="label">Cyber Lab Status:</span><br/>${p.cyber}</p>
+          `;
+        });
+      }
+    }).addTo(map);
+  </script>
+</body>
+</html>

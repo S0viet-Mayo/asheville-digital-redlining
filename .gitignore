@@ -1,0 +1,16 @@
+# Environment & Secrets
+.env
+*.pem
+
+# Python
+__pycache__/
+venv/
+.venv/
+
+# Large Raw Datasets (Keep small GeoJSONs, ignore massive FCC CSVs)
+data/raw/**/*.csv
+data/raw/**/*.zip
+
+# OS Files
+.DS_Store
+Thumbs.db
